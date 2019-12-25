@@ -9,4 +9,4 @@ Other parts needed:
 - Arduino Mega 2560 (or Uno)
 
 ![zusammengebaut](https://raw.githubusercontent.com/cuddlycheetah/fussbodenheizungs-stellregler/master/zusammengebaut.jpg)
-![image](https://raw.githubusercontent.com/cuddlycheetah/fussbodenheizungs-stellregler/master/image.jpg)
+![image](https://raw.githubusercontent.com/cuddlycheetah/fussbodenheizungs-stellregler/master/image.png)
