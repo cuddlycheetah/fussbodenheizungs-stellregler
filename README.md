@@ -8,3 +8,4 @@ Other parts needed:
 - TB6600 Stepper Controller ( https://www.ebay.de/itm/233264472435 )
 - Arduino Mega 2560 (or Uno)
 
+![zusammengebaut](https://raw.githubusercontent.com/cuddlycheetah/fussbodenheizungs-stellregler/master/zusammengebaut.jpg)
