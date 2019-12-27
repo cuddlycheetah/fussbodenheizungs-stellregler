@@ -2,15 +2,11 @@
 #include <Adafruit_ADS1015.h>
 
 Adafruit_ADS1115 ads;  /* Use this for the 16-bit version */
+#define TB6600_MASTER_DIR 8
+#define TB6600_MASTER_STEP 9
 
-#define TB6600_0_ENABLE 10
-#define TB6600_0_DIR 11
-#define TB6600_0_STEP 12
-
+#define TB6600_0_ENABLE 12
 #define TB6600_1_ENABLE 10
-#define TB6600_1_DIR 11
-#define TB6600_1_STEP 12
-
 
 //#define D_SPEED_FAST 4000
 #define D_SPEED_FAST 7400
@@ -19,12 +15,14 @@ void setup() {
   while (!Serial);
   Serial.begin(230400);
   pinMode(13, OUTPUT);
+  pinMode(TB6600_MASTER_DIR, OUTPUT);
+  pinMode(TB6600_MASTER_STEP, OUTPUT);  
   pinMode(TB6600_0_ENABLE, OUTPUT);
-  pinMode(TB6600_0_DIR, OUTPUT);
-  pinMode(TB6600_0_STEP, OUTPUT);
   pinMode(TB6600_1_ENABLE, OUTPUT);
-  pinMode(TB6600_1_DIR, OUTPUT);
-  pinMode(TB6600_1_STEP, OUTPUT);  
+  delay(100);
+  digitalWrite(TB6600_0_ENABLE, LOW);
+  digitalWrite(TB6600_1_ENABLE, LOW);
+
   initADC();
 }
 
@@ -59,6 +57,13 @@ void initADC() {
   initADC0();
   initADC1();
 }
+void reset() {
+  while (true) {
+    Serial.println(F("F#ADC_FAIL"));
+    yield;
+    delay(1000);
+  }
+}
 void initADC0() {
   int16_t val = ads.readADC_SingleEnded(0);
   ADC0[4] = val;
@@ -67,6 +72,7 @@ void initADC0() {
   ADC0[1] = val;
   ADC0[0] = val;
   ADC0S = val;
+  if (val == -1) { Serial.println("ADC not working"); reset(); } 
   potProzent0 = map(ADC0S / 10, POT_0_MIN, POT_0_MAX, 0, 1024);
 }
 void initADC1() {
@@ -100,8 +106,9 @@ void readADC1() {
 
 void goto0(int target) {
   digitalWrite(TB6600_0_ENABLE, HIGH);
+  digitalWrite(TB6600_1_ENABLE, LOW);
   double t = 800;
-  delay(300);
+//  delay(300);
   int i = 0;
   int turnOvers = 0;
   bool lastDirection = 0;
@@ -112,8 +119,8 @@ void goto0(int target) {
 
     if (nowDirection != lastDirection) turnOvers++;
 
-    digitalWrite(TB6600_0_DIR, nowDirection);
-    digitalWrite(TB6600_0_STEP, HIGH);
+    digitalWrite(TB6600_MASTER_DIR, nowDirection);
+    digitalWrite(TB6600_MASTER_STEP, HIGH);
     t = map( abs(potProzent0 - target), 0, 200, 1, 300);
     if (t > 50) t = D_SPEED_FAST;
     else t = 20;
@@ -121,7 +128,7 @@ void goto0(int target) {
     steps++;
 
     delayMicroseconds(1000000 / t);
-    digitalWrite(TB6600_0_STEP, LOW);
+    digitalWrite(TB6600_MASTER_STEP, LOW);
     delayMicroseconds(1000000 / t);
 
     if ((t > 50 && i % 50 == 0) || (t <= 50 && i % 10 == 0)) {
@@ -137,12 +144,13 @@ void goto0(int target) {
     }
   }
 
-  delay(250);
+//  delay(250);
   digitalWrite(TB6600_0_ENABLE, LOW);
   Serial.println(steps);
 }
 
 void goto1(int target) {
+  digitalWrite(TB6600_0_ENABLE, LOW);
   digitalWrite(TB6600_1_ENABLE, HIGH);
   double t = 800;
   delay(300);
@@ -156,8 +164,8 @@ void goto1(int target) {
 
     if (nowDirection != lastDirection) turnOvers++;
 
-    digitalWrite(TB6600_1_DIR, nowDirection);
-    digitalWrite(TB6600_1_STEP, HIGH);
+    digitalWrite(TB6600_MASTER_DIR, nowDirection);
+    digitalWrite(TB6600_MASTER_STEP, HIGH);
     t = map( abs(potProzent0 - target), 0, 200, 1, 300);
     if (t > 50) t = D_SPEED_FAST;
     else t = 20;
@@ -165,7 +173,7 @@ void goto1(int target) {
     steps++;
 
     delayMicroseconds(1000000 / t);
-    digitalWrite(TB6600_1_STEP, LOW);
+    digitalWrite(TB6600_MASTER_STEP, LOW);
     delayMicroseconds(1000000 / t);
 
     if ((t > 50 && i % 50 == 0) || (t <= 50 && i % 10 == 0)) {
@@ -186,8 +194,8 @@ void goto1(int target) {
 }
 
 void loop() {
-  int16_t adc1, adc2, adc3;
-  readADC0();
+  //int16_t adc1, adc2, adc3;
+  readADC0(); readADC1();
   //Serial.println(ADC0S / 10);
   Serial.print('A');
   Serial.println(potProzent0);
