@@ -19,11 +19,17 @@ void setup() {
   while (!Serial);
   Serial.begin(230400);
   pinMode(13, OUTPUT);
+
   pinMode(TB6600_MASTER_DIR, OUTPUT);
-  pinMode(TB6600_MASTER_STEP, OUTPUT);  
+  pinMode(TB6600_MASTER_STEP, OUTPUT);
   pinMode(TB6600_0_ENABLE, OUTPUT);
   pinMode(TB6600_1_ENABLE, OUTPUT);
   delay(100);
+
+  tone(TB6600_0_ENABLE, 500);
+  delay(200);
+  noTone(TB6600_0_ENABLE); 
+
   digitalWrite(TB6600_0_ENABLE, LOW);
   digitalWrite(TB6600_1_ENABLE, LOW);
 
@@ -49,12 +55,26 @@ void initADC() {
   //ads.setGain(GAIN_SIXTEEN);    // 16x gain  +/- 0.256V  1 bit = 0.125mV  0.0078125mV
   initADC0();
   initADC1();
+  tone(TB6600_0_ENABLE, 600);
+  delay(200);
+  tone(TB6600_0_ENABLE, 400);
+  delay(200);
+  noTone(TB6600_0_ENABLE); 
+
+  digitalWrite(TB6600_0_ENABLE, LOW);
+  digitalWrite(TB6600_1_ENABLE, LOW);
+
+
 }
 void startProtectedMode() {
   while (true) {
     Serial.println(F("F#FATAL_ADC_FAIL"));
     yield;
     delay(1000);
+    tone(TB6600_0_ENABLE, 500);
+    delay(500);
+    noTone(TB6600_0_ENABLE);
+    digitalWrite(TB6600_0_ENABLE, LOW);
   }
 }
 void initADC0() {
@@ -173,6 +193,8 @@ void loop() {
           Serial.println(F("F#CHECKSUM"));
           return;
         }
+        if (ads.readADC_SingleEnded(0) == -1) { Serial.println("ADC not working"); startProtectedMode(); }
+ 
         int rotation = atoi( arg0.c_str() );
         rotation = min(max(rotation, 0), 1000);
         if (command.equalsIgnoreCase(F("A"))) gotoTarget(rotation, 0);
