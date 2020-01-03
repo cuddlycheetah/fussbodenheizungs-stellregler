@@ -10,7 +10,7 @@ Adafruit_ADS1115 ads;  /* Use this for the 16-bit version */
 #define TB6600_0_ENABLE 12
 
 #define POT_1_MIN 0
-#define POT_1_MAX 2400
+#define POT_1_MAX 1300 //113544
 #define TB6600_1_ENABLE 10
 
 #define D_SPEED_FAST 8000
@@ -57,9 +57,10 @@ void initADC() {
   initADC1();
   tone(TB6600_0_ENABLE, 600);
   delay(200);
-  tone(TB6600_0_ENABLE, 400);
-  delay(200);
   noTone(TB6600_0_ENABLE); 
+  tone(TB6600_1_ENABLE, 400);
+  delay(200);
+  noTone(TB6600_1_ENABLE); 
 
   digitalWrite(TB6600_0_ENABLE, LOW);
   digitalWrite(TB6600_1_ENABLE, LOW);
