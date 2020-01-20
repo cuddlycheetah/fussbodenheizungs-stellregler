@@ -8,5 +8,6 @@ Other parts needed:
 - TB6600 Stepper Controller ( https://www.ebay.de/itm/233264472435 )
 - Arduino Mega 2560 (or Uno)
 
+Print everything in PET-G, PLA is not suitable for this(because its literally melting there)!
 ![zusammengebaut](https://raw.githubusercontent.com/cuddlycheetah/fussbodenheizungs-stellregler/master/zusammengebaut.jpg)
 ![image](https://raw.githubusercontent.com/cuddlycheetah/fussbodenheizungs-stellregler/master/image.png)
