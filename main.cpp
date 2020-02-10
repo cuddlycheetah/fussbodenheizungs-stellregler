@@ -146,16 +146,16 @@ void gotoTarget(int target, int driverId) {
     if (nowDirection != lastDirection) turnOvers++;
 
     t = map( abs(potProzent - target), 0, 200, 1, 300);
-    t = t > 50 ? D_SPEED_FAST : 20;
+    t = t > 30 ? D_SPEED_FAST : 20;
     t = floor(t/2) * 2;
     steps++;
 
     // rotate 1 step
     digitalWrite(TB6600_MASTER_DIR, nowDirection);
     digitalWrite(TB6600_MASTER_STEP, HIGH);
-    delayMicroseconds(1000000 / t);
+    delay(45); //delayMicroseconds(1000000 / t);
     digitalWrite(TB6600_MASTER_STEP, LOW);
-    delayMicroseconds(1000000 / t);
+    delay(50); //delayMicroseconds(1000000 / t);
     // read results sometimes
     if ((t > 50 && i % 50 == 0) || (t <= 50 && i % 10 == 0)) {
       readADC(driverId);
@@ -164,7 +164,7 @@ void gotoTarget(int target, int driverId) {
 
     lastDirection = nowDirection;
 
-    if (turnOvers > 10) {
+    if (turnOvers > 3) {
       Serial.println("F#MAXCORRECTIONS");
       break;
     }
